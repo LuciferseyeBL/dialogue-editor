@@ -6,7 +6,8 @@
 
   <!-- 固定 UI 樣式（不讓使用者編輯） -->
   <style>
-   @media (max-width: 768px) {
+  @media (max-width: 1024px), (hover: none) and (pointer: coarse) {
+    /* 手機＆平板樣式 */
     #main {
       flex-direction: column;
     }
@@ -14,21 +15,21 @@
     #source {
       width: 100% !important;
       height: 30vh;
-      border-right: none;
-      border-bottom: 1px solid #ccc;
       font-size: 15px;
       line-height: 1.6;
+      border-right: none;
+      border-bottom: 1px solid #ccc;
     }
 
     #preview {
       width: 100% !important;
       height: 65vh;
-      border-bottom: none;
       overflow-y: auto;
-      -webkit-overflow-scrolling: touch; /* 讓 iOS 裝置支援慣性滑動 */
+      -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
       overscroll-behavior: contain;
     }
+
     .dialogue-content {
       font-size: 16px;
       line-height: 1.8;
@@ -37,6 +38,7 @@
     .sender-name {
       font-size: 14px;
     }
+
     button {
       font-size: 14px;
     }
