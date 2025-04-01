@@ -2,10 +2,45 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <title>對話編輯神器：凜與GPT小天使的辛苦結晶 V5.5</title>
+  <title>對話編輯神器：凜與GPT小天使的辛苦結晶 V5.6</title>
 
   <!-- 固定 UI 樣式（不讓使用者編輯） -->
   <style>
+   @media (max-width: 768px) {
+    #main {
+      flex-direction: column;
+    }
+
+    #source {
+      width: 100% !important;
+      height: 30vh;
+      border-right: none;
+      border-bottom: 1px solid #ccc;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    #preview {
+      width: 100% !important;
+      height: 65vh;
+      border-bottom: none;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch; /* 讓 iOS 裝置支援慣性滑動 */
+      scroll-behavior: smooth;
+      overscroll-behavior: contain;
+    }
+    .dialogue-content {
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .sender-name {
+      font-size: 14px;
+    }
+    button {
+      font-size: 14px;
+    }
+  }
     body { margin: 0; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; }
     #header { padding: 10px; border-bottom: 1px solid #ccc; text-align: center; font-weight: bold; }
     .role-name-inputs { display: flex; justify-content: space-between; padding: 5px 10px; }
@@ -131,7 +166,7 @@
       📘 查看 GitHub 說明文件（README）
     </a>
   </div>
-  <div id="header">📚 對話編輯神器：凜與GPT小天使的辛苦結晶 V5.5</div>
+  <div id="header">📚 對話編輯神器：凜與GPT小天使的辛苦結晶 V5.6</div>
   <div class="role-name-inputs">
     <input id="leftRole" placeholder="左側角色名 (可留空)" />
     <input id="rightRole" placeholder="右側角色名 (可留空)" />
@@ -148,6 +183,8 @@
     <button onclick="toggleMode()">模式切換</button>
     <span id="mode-status">拖曳模式</span>
     <button id="clearAllBtn" onclick="clearAll()">全部清除</button>
+    <button onclick="autoConvertFromSource()">🔄 自動轉換對話泡泡</button>
+    <button onclick="flipAllSides()">↔ 一次性對調左右泡泡</button>
   </div>
   <div id="styleEditorModal">
     <textarea id="styleEditorArea"></textarea>
@@ -410,6 +447,48 @@ function toggleMode() {
   saveState();
 }
 
+function autoConvertFromSource() {
+  const rawHTML = source.innerHTML.trim();
+  if (!rawHTML) return alert("請先貼上原始文本在左側區域！");
+
+  const segments = rawHTML.split(/<br><br>/i);
+  if (segments.length === 0) return;
+
+  preview.innerHTML = ""; // 清空現有預覽
+  currentOrder = 1;
+
+  segments.forEach((seg, idx) => {
+    const cleanHTML = seg.trim();
+    if (!cleanHTML) return;
+
+    // 預設奇偶決定左右
+    const side = idx % 2 === 0 ? "left" : "right";
+    const dlg = createDialogue(cleanHTML, currentOrder++, side);
+    preview.appendChild(dlg);
+  });
+
+  refreshNumbers();
+  saveState();
+  alert("✅ 已轉換完成！可手動微調左右位置與角色名。");
+}
+
+function flipAllSides() {
+  const dialogues = preview.querySelectorAll(".dialogue");
+  dialogues.forEach(dlg => {
+    if (dlg.classList.contains("chat-left")) {
+      dlg.classList.remove("chat-left", "left");
+      dlg.classList.add("chat-right", "right");
+      dlg.dataset.side = "right";
+    } else if (dlg.classList.contains("chat-right")) {
+      dlg.classList.remove("chat-right", "right");
+      dlg.classList.add("chat-left", "left");
+      dlg.dataset.side = "left";
+    }
+  });
+  refreshNumbers();
+  saveState();
+  alert("↔ 所有對話泡泡已對調左右！");
+}
 function saveState() {
   const data = {
     left: leftInput.value,
@@ -445,7 +524,7 @@ function loadState() {
 
   const data = JSON.parse(localStorage.getItem("dialogue-editor-save") || "{}");
   if (!data.dialogues) {
-    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.5優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br>3. 調正樣式設定內的錯字。<br>4. 修BUG：修正原先修改模式無法任意ENTER的問題。<br><br>其他功能：<br>0. 顯示角色名可以自定義（空白則無）<br>1. 對話框右上有一個小小的雙箭頭，可以左右對調對話框的位置唷！<br>2. 同側對話框可以拖曳修改順序！<br>3. 「模式切換」按下去以後（切換成修改模式）就可以點選對話框直接進行文字修改！";
+    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.6優化：手機可以用並讓手機好用的相關功能<br><br>v5.5優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br>3. 調正樣式設定內的錯字。<br>4. 修BUG：修正原先修改模式無法任意ENTER的問題。<br><br>其他功能：<br>0. 顯示角色名可以自定義（空白則無）<br>1. 對話框右上有一個小小的雙箭頭，可以左右對調對話框的位置唷！<br>2. 同側對話框可以拖曳修改順序！<br>3. 「模式切換」按下去以後（切換成修改模式）就可以點選對話框直接進行文字修改！";
     return;
   }
   leftInput.value = data.left || "";
