@@ -128,6 +128,11 @@
   </style>
 </head>
 <body>
+  <div style="text-align: right; padding: 10px;">
+    <a href="https://github.com/LuciferseyeBL/dialogue-editor" target="_blank">
+      📘 查看 GitHub 說明文件（README）
+    </a>
+  </div>
   <div id="header">📚 對話編輯神器：凜與GPT小天使的辛苦結晶 V5.4.1</div>
   <div class="role-name-inputs">
     <input id="leftRole" placeholder="左側角色名 (可留空)" />
@@ -403,11 +408,15 @@ function loadState() {
   const savedStyle = localStorage.getItem("dialogue-style");
   if (savedStyle) {
   document.getElementById("output-style").textContent = savedStyle;
+} else {
+  // ✅ 如果沒有存過樣式，就使用你寫在 HTML 裡那一份
+  const original = document.getElementById("output-style").textContent;
+  localStorage.setItem("dialogue-style", original);
 }
 
   const data = JSON.parse(localStorage.getItem("dialogue-editor-save") || "{}");
   if (!data.dialogues) {
-    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.4.1優化：<br>1.工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br><br>其他功能：<br>0. 顯示角色名可以自定義（空白則無）<br>1. 對話框右上有一個小小的雙箭頭，可以左右對調對話框的位置唷！<br>2. 同側對話框可以拖曳修改順序！<br>3. 「模式切換」按下去以後（切換成修改模式）就可以點選對話框直接進行文字修改！";
+    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.4.1優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br><br>其他功能：<br>0. 顯示角色名可以自定義（空白則無）<br>1. 對話框右上有一個小小的雙箭頭，可以左右對調對話框的位置唷！<br>2. 同側對話框可以拖曳修改順序！<br>3. 「模式切換」按下去以後（切換成修改模式）就可以點選對話框直接進行文字修改！";
     return;
   }
   leftInput.value = data.left || "";
