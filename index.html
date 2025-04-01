@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <title>對話編輯神器：凜與GPT小天使的辛苦結晶 V5.4</title>
+  <title>對話編輯神器：凜與GPT小天使的辛苦結晶 V5.4.1</title>
 
   <!-- 固定 UI 樣式（不讓使用者編輯） -->
   <style>
@@ -80,12 +80,12 @@
   <!-- 使用者可編輯的輸出樣式 -->
   <style id="output-style">
 .chat-container {
-  display: flex; /* 這邊都不要動，往下拉 */
+  display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 20px; /* 對話框間距 */
   width: 100%;
   font-family: Arial, sans-serif;
-  font-weight: 400;
+  font-weight: 400; /* 對話框寬度 */
   max-width: 100%;
 }
 .chat-message {
@@ -97,7 +97,7 @@
   margin-bottom: 0;
 }
 .sender-name {
-  font-size: 12px; /* 理論上是改人名的相關設定，但未經測試 */
+  font-size: 12px; /* 修改人名相關設定 */
   font-weight: bold;
   margin-bottom: 3px;
   color: #666;
@@ -114,8 +114,8 @@
   margin-bottom: 0;
 }
 .chat-left {
-  background-color: #f1f1f1; /* 右邊對話框背景色 */
-  color: #3C3C3C; /* 右邊對話框字體色 */
+  background-color: #f1f1f1; /* 左邊對話框背景色 */
+  color: #3C3C3C; /* 左邊對話框字體色 */
   align-self: flex-start;
   max-width: 70%; /* 對話框寬度佔畫面百分比 */
 }
@@ -128,12 +128,7 @@
   </style>
 </head>
 <body>
-    <div style="text-align: right; padding: 5px;">
-    <a href="https://github.com/LuciferseyeBL/dialogue-editor" target="_blank">
-      📘 查看 GitHub 說明文件（README）
-    </a>
-  </div>
-  <div id="header">📚 對話編輯神器：凜與GPT小天使的辛苦結晶 V5.4</div>
+  <div id="header">📚 對話編輯神器：凜與GPT小天使的辛苦結晶 V5.4.1</div>
   <div class="role-name-inputs">
     <input id="leftRole" placeholder="左側角色名 (可留空)" />
     <input id="rightRole" placeholder="右側角色名 (可留空)" />
@@ -180,7 +175,60 @@ function closeStyleEditor() {
 function applyStyle() {
   const updated = document.getElementById("styleEditorArea").value;
   document.getElementById("output-style").textContent = updated;
+  syncPreviewStyle(); 
   closeStyleEditor();
+}
+
+function syncPreviewStyle() {
+  const styleText = document.getElementById("output-style").textContent;
+  const temp = document.createElement("style");
+  temp.textContent = styleText;
+  document.head.appendChild(temp);
+
+  // ✅ 新增一個測試容器來讀取 .chat-container 的 gap
+  const testContainer = document.createElement("div");
+  testContainer.className = "chat-container";
+  document.body.appendChild(testContainer);
+  const computedContainer = getComputedStyle(testContainer);
+  preview.style.gap = computedContainer.gap;
+  document.body.removeChild(testContainer); // 清除測試容器
+
+  const test = document.createElement("div");
+  test.className = "chat-left";
+  document.body.appendChild(test);
+  const computed = getComputedStyle(test);
+
+  const leftPreviewBoxes = document.querySelectorAll(".dialogue.chat-left");
+  const rightPreviewBoxes = document.querySelectorAll(".dialogue.chat-right");
+
+  leftPreviewBoxes.forEach(el => {
+    el.style.backgroundColor = computed.backgroundColor;
+    el.style.color = computed.color;
+    el.style.padding = computed.padding;
+    el.style.borderRadius = computed.borderRadius;
+    el.style.maxWidth = computed.maxWidth;
+    el.style.alignSelf = computed.alignSelf;
+    el.style.marginTop = computed.marginTop;
+    el.style.marginBottom = computed.marginBottom;
+    el.style.whiteSpace = computed.whiteSpace;
+  });
+
+  test.className = "chat-right";
+  const computedR = getComputedStyle(test);
+  rightPreviewBoxes.forEach(el => {
+    el.style.backgroundColor = computedR.backgroundColor;
+    el.style.color = computedR.color;
+    el.style.padding = computedR.padding;
+    el.style.borderRadius = computedR.borderRadius;
+    el.style.maxWidth = computedR.maxWidth;
+    el.style.alignSelf = computedR.alignSelf;
+    el.style.marginTop = computedR.marginTop;
+    el.style.marginBottom = computedR.marginBottom;
+    el.style.whiteSpace = computedR.whiteSpace;
+  });
+
+  test.remove();
+  temp.remove();
 }
 
 function processText(text) {
@@ -347,13 +395,19 @@ function saveState() {
       html: dlg.querySelector(".dialogue-content")?.innerHTML || ""
     }))
   };
+  localStorage.setItem("dialogue-style", document.getElementById("output-style").textContent);
   localStorage.setItem("dialogue-editor-save", JSON.stringify(data));
 }
 
 function loadState() {
+  const savedStyle = localStorage.getItem("dialogue-style");
+  if (savedStyle) {
+  document.getElementById("output-style").textContent = savedStyle;
+}
+
   const data = JSON.parse(localStorage.getItem("dialogue-editor-save") || "{}");
   if (!data.dialogues) {
-    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>其他功能：<br>0. 顯示角色名可以自定義（空白則無）<br>1. 對話框右上有一個小小的雙箭頭，可以左右對調對話框的位置唷！<br>2. 同側的對話框可以拖曳修改順序！<br>3. 「合併下方同側」可以把兩個對話框合併成一個，點選想要操作的對話框就可以了～<br>4. 「模式切換」按下去以後（切換成修改模式）就可以點選對話框直接進行文字修改！";
+    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.4.1優化：<br>1.工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br><br>其他功能：<br>0. 顯示角色名可以自定義（空白則無）<br>1. 對話框右上有一個小小的雙箭頭，可以左右對調對話框的位置唷！<br>2. 同側對話框可以拖曳修改順序！<br>3. 「模式切換」按下去以後（切換成修改模式）就可以點選對話框直接進行文字修改！";
     return;
   }
   leftInput.value = data.left || "";
@@ -365,6 +419,7 @@ function loadState() {
     preview.appendChild(dlg);
   });
   refreshNumbers();
+  syncPreviewStyle(); // ⭐ 確保載入時立即套用樣式
 }
 
 function clearAll() {
