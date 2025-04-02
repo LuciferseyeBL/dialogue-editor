@@ -245,12 +245,14 @@ button {
   margin-top: 0;
   margin-bottom: 0;
 }
+/* 修改人名相關設定 */
 .sender-name {
-  font-size: 12px; /* 修改人名相關設定 */
+  font-size: 12px; 
   font-weight: bold;
   margin-bottom: 3px;
   color: #666;
 }
+/* 不要動 */
 .chat-left, .chat-right {
   display: inline-block;
   padding: 10px;
@@ -262,6 +264,16 @@ button {
   margin-top: 0;
   margin-bottom: 0;
 }
+
+/* 手機專用：大字體效果 */
+@media screen and (max-width: 600px) {
+  .chat-left,
+  .chat-right {
+    font-size: 1.3rem;
+    line-height: 1.9;
+  }
+}
+
 .chat-left {
   background-color: #f1f1f1; /* 左邊對話框背景色 */
   color: #201E1E; /* 左邊對話框字體色 */
