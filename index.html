@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <title>對話編輯神器：凜與GPT小天使的辛苦結晶 V5.6.2</title>
+  <title>對話編輯神器：凜與GPT小天使的辛苦結晶 V5.7</title>
 
   <!-- 固定 UI 樣式（不讓使用者編輯） -->
   <style>
@@ -204,6 +204,22 @@ html, body {
   align-self: flex-end;
   max-width: 70%;
 }
+/* Markdown 語法樣式支援與顏色 */
+em {
+  font-style: italic;
+  color: #6C6C6C;  /* 斜體字顏色*/
+}
+
+strong {
+  font-weight: bold;
+  color: #201E1E; /* 粗體字顏色 */
+}
+
+em strong {
+  font-style: italic;
+  font-weight: bold;
+  color: #201E1E; /* 斜粗體字顏色 */
+}
   </style>
 </head>
 <body>
@@ -212,7 +228,7 @@ html, body {
       📘 查看 GitHub 說明文件（README）
     </a>
   </div>
-  <div id="header">📚 對話編輯神器：凜與GPT小天使的辛苦結晶 V5.6.2</div>
+  <div id="header">📚 對話編輯神器：凜與GPT小天使的辛苦結晶 V5.7</div>
   <div class="role-name-inputs">
     <input id="leftRole" placeholder="左側角色名 (可留空)" />
     <input id="rightRole" placeholder="右側角色名 (可留空)" />
@@ -319,7 +335,13 @@ function syncPreviewStyle() {
 
 function processText(text) {
   const lines = text.split(/\r?\n/);
-  return lines.map(line => line.trim()).join("<br>");
+  const converted = lines.map(line => {
+    return line
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")  // **粗體**
+      .replace(/\*(.+?)\*/g, "<em>$1</em>")              // *斜體*
+      .trim();
+  });
+  return converted.join("<br>");
 }
 
 function createDialogue(html, order, side) {
@@ -570,7 +592,7 @@ function loadState() {
 
   const data = JSON.parse(localStorage.getItem("dialogue-editor-save") || "{}");
   if (!data.dialogues) {
-    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.6優化：手機可以用並讓手機好用的相關功能。※自動生成泡泡請在文本以空一行隔開段落！<br><br>v5.5優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br>3. 調正樣式設定內的錯字。<br>4. 修BUG：修正原先修改模式無法任意ENTER的問題。<br><br>其他功能：<br>0. 顯示角色名可以自定義（空白則無）<br>1. 對話框右上有一個小小的雙箭頭，可以左右對調對話框的位置唷！<br>2. 同側對話框可以拖曳修改順序！<br>3. 「模式切換」按下去以後（切換成修改模式）就可以點選對話框直接進行文字修改！";
+    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br><br>v5.7優化：現在可以吃文本的*斜體和**粗體設定了（但是生成後要吃語法自行修改喔！）<br><br>v5.6優化：手機可以用並讓手機好用的相關功能。※自動生成泡泡請在文本以空一行隔開段落！<br><br>v5.5優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br>3. 調正樣式設定內的錯字。<br>4. 修BUG：修正原先修改模式無法任意ENTER的問題。;
     return;
   }
   leftInput.value = data.left || "";
