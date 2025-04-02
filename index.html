@@ -264,14 +264,6 @@ button {
   margin-top: 0;
   margin-bottom: 0;
 }
-
-/* 手機專用：大字體效果 */
-@media screen and (max-width: 600px) {
-  .chat-left,
-  .chat-right {
-    font-size: 1.3rem;
-    line-height: 1.9;
-  }
 }
 
 .chat-left {
@@ -386,17 +378,23 @@ function syncPreviewStyle() {
   const leftPreviewBoxes = document.querySelectorAll(".dialogue.chat-left");
   const rightPreviewBoxes = document.querySelectorAll(".dialogue.chat-right");
 
-  leftPreviewBoxes.forEach(el => {
-    el.style.backgroundColor = computed.backgroundColor;
-    el.style.color = computed.color;
-    el.style.padding = computed.padding;
-    el.style.borderRadius = computed.borderRadius;
-    el.style.maxWidth = computed.maxWidth;
-    el.style.alignSelf = computed.alignSelf;
-    el.style.marginTop = computed.marginTop;
-    el.style.marginBottom = computed.marginBottom;
-    el.style.whiteSpace = computed.whiteSpace;
-  });
+leftPreviewBoxes.forEach(el => {
+  el.style.backgroundColor = computed.backgroundColor;
+  el.style.color = computed.color;
+  el.style.padding = computed.padding;
+  el.style.borderRadius = computed.borderRadius;
+  el.style.maxWidth = computed.maxWidth;
+  el.style.alignSelf = computed.alignSelf;
+  el.style.marginTop = computed.marginTop;
+  el.style.marginBottom = computed.marginBottom;
+  el.style.whiteSpace = computed.whiteSpace;
+
+  // ✅ 加這段讓手機字體正確套用
+  if (isMobile()) {
+    el.style.fontSize = "1rem";
+    el.style.lineHeight = "1.7";
+  }
+});
 
   test.className = "chat-right";
   const computedR = getComputedStyle(test);
@@ -410,6 +408,11 @@ function syncPreviewStyle() {
     el.style.marginTop = computedR.marginTop;
     el.style.marginBottom = computedR.marginBottom;
     el.style.whiteSpace = computedR.whiteSpace;
+  // ✅ 加這段讓手機字體正確套用
+  if (isMobile()) {
+    el.style.fontSize = "1rem";
+    el.style.lineHeight = "1.7";
+  }
   });
 
   test.remove();
@@ -429,6 +432,13 @@ function processText(text) {
   return converted.join("<br>");
 }
 
+<!-- ✅ 整合後版本：支援手機限定大字體，自動偵測並套用 -->
+<!-- 以下為 createDialogue 函式中修改過的部分 -->
+
+function isMobile() {
+  return window.innerWidth <= 600;
+}
+
 function createDialogue(html, order, side) {
   const div = document.createElement("div");
   const className = side === "left" ? "dialogue chat-left left" : "dialogue chat-right right";
@@ -442,27 +452,24 @@ function createDialogue(html, order, side) {
 
   const switchBtn = document.createElement("button");
   switchBtn.className = "switch-btn";
-  switchBtn.textContent = "↔";
+  switchBtn.textContent = "⇄";
   switchBtn.onclick = switchSide;
 
   const content = document.createElement("div");
   content.className = "dialogue-content";
   content.setAttribute("contenteditable", "false");
 
-  // 插入內容
   content.innerHTML = html.trim();
 
-  // 支援修改模式下 Enter 可堆疊 <br>
+  // Enter 支援堆疊<br>
   content.addEventListener("keydown", e => {
     if (e.key === "Enter") {
       e.preventDefault();
-
       const br = document.createElement("br");
       const selection = window.getSelection();
       if (!selection.rangeCount) return;
       const range = selection.getRangeAt(0);
       range.insertNode(br);
-
       const prevNode = br.previousSibling;
       if (prevNode && prevNode.nodeName === "BR") {
         const br2 = document.createElement("br");
@@ -473,13 +480,11 @@ function createDialogue(html, order, side) {
         range.setStartAfter(br);
         range.setEndAfter(br);
       }
-
       selection.removeAllRanges();
       selection.addRange(range);
     }
   });
 
-  // 點擊進入編輯模式
   div.addEventListener("click", () => {
     if (mode === "edit") {
       content.setAttribute("contenteditable", "true");
@@ -492,7 +497,6 @@ function createDialogue(html, order, side) {
     }
   });
 
-  // 拖曳事件
   div.addEventListener("dragstart", () => div.classList.add("dragging"));
   div.addEventListener("dragend", () => div.classList.remove("dragging"));
 
