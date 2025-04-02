@@ -391,8 +391,8 @@ leftPreviewBoxes.forEach(el => {
 
   // ✅ 加這段讓手機字體正確套用
   if (isMobile()) {
-    el.style.fontSize = "1rem";
-    el.style.lineHeight = "1.7";
+    el.style.fontSize = computed.fontSize;
+    el.style.lineHeight = computed.lineHeight;
   }
 });
 
@@ -410,8 +410,8 @@ leftPreviewBoxes.forEach(el => {
     el.style.whiteSpace = computedR.whiteSpace;
   // ✅ 加這段讓手機字體正確套用
   if (isMobile()) {
-    el.style.fontSize = "1rem";
-    el.style.lineHeight = "1.7";
+    el.style.fontSize = computed.fontSize;
+    el.style.lineHeight = computed.lineHeight;
   }
   });
 
@@ -459,7 +459,7 @@ function createDialogue(html, order, side) {
   content.className = "dialogue-content";
   content.setAttribute("contenteditable", "false");
 
-  content.innerHTML = html.trim();
+content.innerHTML = processText(html.trim());
 
   // Enter 支援堆疊<br>
   content.addEventListener("keydown", e => {
