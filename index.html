@@ -455,12 +455,23 @@ function createDialogue(html, order, side) {
 function switchSide(e) {
   e.stopPropagation();
   const dlg = e.target.closest(".dialogue");
-  dlg.classList.toggle("left");
-  dlg.classList.toggle("right");
-  dlg.classList.toggle("chat-left");
-  dlg.classList.toggle("chat-right");
-  dlg.dataset.side = dlg.classList.contains("left") ? "left" : "right";
-  saveState();
+  const sideNow = dlg.dataset.side;
+
+  // 清除所有與 side 有關的 class
+  dlg.classList.remove("left", "right", "chat-left", "chat-right");
+
+  // 切換邏輯
+  if (sideNow === "left") {
+    dlg.classList.add("right", "chat-right");
+    dlg.dataset.side = "right";
+  } else {
+    dlg.classList.add("left", "chat-left");
+    dlg.dataset.side = "left";
+  }
+
+  refreshNumbers(); // 確保編號即時更新
+  syncPreviewStyle(); // ⭐ 重新套用樣式，否則 DOM 不會即時更新
+  saveState(); // ⭐ 儲存狀態，否則 reload 不保留
 }
 
 function getDropTarget(e) {
@@ -586,11 +597,20 @@ function flipAllSides() {
       dlg.classList.add("chat-left", "left");
       dlg.dataset.side = "left";
     }
+
+    // ✅ 確保切換按鈕正常掛上事件（避免 reload 後失效）
+    const switchBtn = dlg.querySelector(".switch-btn");
+    if (switchBtn) {
+      switchBtn.onclick = switchSide;
+    }
   });
+
   refreshNumbers();
-  saveState();
+  syncPreviewStyle(); // 確保樣式刷新
+  saveState(); // ⭐ 重新儲存狀態，否則 reload 還是會壞掉
   alert("↔ 所有對話泡泡已對調左右！");
 }
+
 function saveState() {
   const data = {
     left: leftInput.value,
@@ -617,28 +637,52 @@ function saveState() {
 function loadState() {
   const savedStyle = localStorage.getItem("dialogue-style");
   if (savedStyle) {
-  document.getElementById("output-style").textContent = savedStyle;
-} else {
-  // 如果沒有存過樣式，就使用你寫在 HTML 裡那一份
-  const original = document.getElementById("output-style").textContent;
-  localStorage.setItem("dialogue-style", original);
-}
+    document.getElementById("output-style").textContent = savedStyle;
+  } else {
+    const original = document.getElementById("output-style").textContent;
+    localStorage.setItem("dialogue-style", original);
+  }
 
   const data = JSON.parse(localStorage.getItem("dialogue-editor-save") || "{}");
   if (!data.dialogues) {
-    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.7優化：現在可以吃文本的*斜體和**粗體設定了（但是生成後要吃語法自行修改喔！）<br><br>v5.6優化：手機可以用並讓手機好用的相關功能。※自動生成泡泡請在文本以空一行隔開段落！<br><br>v5.5優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br>3. 調正樣式設定內的錯字。<br>4. 修BUG：修正原先修改模式無法任意ENTER的問題。";
+    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.7優化：現在可以吃文本的*斜體和**粗體設定了（但是生成後要吃語法自行修改喔！）<br><br>v5.6優化：手機可以用（但現在不好用）。※自動生成泡泡請在文本以空一行隔開段落！<br><br>v5.5優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br>3. 調正樣式設定內的錯字。<br>4. 修BUG：修正原先修改模式無法任意ENTER的問題。";
     return;
   }
+
   leftInput.value = data.left || "";
   rightInput.value = data.right || "";
   source.innerHTML = data.source || "";
   currentOrder = data.order || 1;
+
   data.dialogues.forEach(d => {
     const dlg = createDialogue(d.html, currentOrder++, d.side);
     preview.appendChild(dlg);
   });
+
+  // ✅ 修正BUG：確保載入後 class 與按鈕事件正確
+  const allDialogs = preview.querySelectorAll(".dialogue");
+  allDialogs.forEach(dlg => {
+    const side = dlg.dataset.side;
+    dlg.classList.remove("chat-left", "chat-right", "left", "right");
+    if (side === "left") {
+      dlg.classList.add("chat-left", "left");
+    } else {
+      dlg.classList.add("chat-right", "right");
+    }
+
+    const switchBtn = dlg.querySelector(".switch-btn");
+    if (switchBtn) {
+      switchBtn.onclick = switchSide;
+    }
+  });
+
   refreshNumbers();
-  syncPreviewStyle(); // ⭐ 確保載入時立即套用樣式
+  syncPreviewStyle();
+  // 🔁 最後：確保每個泡泡的 switch-btn 都正確掛上事件（解決 reload 後點擊沒反應的 bug）
+  const allSwitchButtons = preview.querySelectorAll(".switch-btn");
+  allSwitchButtons.forEach(btn => {
+    btn.onclick = switchSide;
+  });
 }
 
 function clearAll() {
