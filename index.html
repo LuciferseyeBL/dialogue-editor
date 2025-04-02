@@ -35,13 +35,13 @@
   scroll-behavior: smooth;
   overscroll-behavior: contain;
   box-sizing: content-box !important;
-  padding-bottom: 140px; /* ⬅️ 重點1：預留空間 */
+  padding-bottom: calc(140px + 20vh); /* 加強底部緩衝空間 */
 }
 
-  .dialogue-content {
-    font-size: 16px;
-    line-height: 1.8;
-  }
+.dialogue-content {
+  font-size: 1.3rem;
+  line-height: 1.9;
+}
 
   .sender-name {
     font-size: 14px;
@@ -111,10 +111,16 @@ button {
     padding-bottom: 10px;
   }
 
-  .dialogue-content {
-    font-size: 1rem;
-    line-height: 1.8;
+.dialogue-content {
+  font-size: 1.3rem;
+  line-height: 1.9;
   }
+
+.dialogue-content * {
+  font-size: inherit;
+  line-height: inherit;
+  }
+
 }
 
 @media screen and (max-width: 480px) {
@@ -132,6 +138,15 @@ button {
     max-width: 45% !important;
     border-radius: 10px;
     white-space: normal !important;
+  }
+.dialogue-content {
+  font-size: 1.3rem;
+  line-height: 1.9;
+  }
+
+.dialogue-content * {
+  font-size: inherit;
+  line-height: inherit;
   }
 }
 
