@@ -436,7 +436,7 @@ function processText(text) {
 <!-- 以下為 createDialogue 函式中修改過的部分 -->
 
 function isMobile() {
-  return window.innerWidth <= 600;
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth <= 600;
 }
 
 function createDialogue(html, order, side) {
