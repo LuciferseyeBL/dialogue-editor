@@ -6,87 +6,97 @@
 
   <!-- 固定 UI 樣式（不讓使用者編輯） -->
   <style>
-  @media (max-width: 1024px), (hover: none) and (pointer: coarse) {
-    #main {
-      flex-direction: column;
-    }
-
-    #source {
-      width: 100% !important;
-      height: 30vh;
-      font-size: 15px;
-      line-height: 1.6;
-      border-right: none;
-      border-bottom: 1px solid #ccc;
-
-    }
-html, body {
-  height: 100vh;
-  overflow: hidden;
-}
-
-#main {
-  flex: 1;
-  overflow-y: auto;
-}
-
-#preview {
-  width: 100% !important;
-  height: calc(65vh - 140px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  overscroll-behavior: contain;
-}
-
-    .dialogue-content {
-      font-size: 16px;
-      line-height: 1.8;
-    }
-
-    .sender-name {
-      font-size: 14px;
-    }
-
-    button {
-      font-size: 16px;
-      padding: 12px 16px;
-      min-height: 44px;
-      max-width: 100%;
-      flex: 0 0 auto;
-      box-sizing: border-box;
-      white-space: nowrap;
-    }
-
-#controls {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #fff;
-  border-top: 1px solid #ccc;
-  padding: 10px 8px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 8px;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
-  z-index: 999;
-
-  max-height: 120px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-    body {
-      padding-bottom: 130px;
-    }
-
-    #source, #preview {
-      height: 32vh;
-    }
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) {
+  #main {
+    flex-direction: column;
   }
+
+  #source {
+    width: 100% !important;
+    height: 30vh;
+    font-size: 15px;
+    line-height: 1.6;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+  }
+
+  html, body {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #main {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  #preview {
+    width: 100% !important;
+    height: calc(65vh - 140px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+  }
+
+  .dialogue-content {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .sender-name {
+    font-size: 14px;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 44px;
+    max-width: 100%;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+
+  #controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #ccc;
+    padding: 10px 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 999;
+
+    max-height: 120px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    padding-bottom: 130px;
+  }
+
+  #source, #preview {
+    height: 32vh;
+  }
+}
+
+/* 獨立寫在外面，不可嵌套 */
+@media (max-width: 480px) {
+  button {
+    font-size: 18px;
+    padding: 14px 20px;
+    min-height: 48px;
+  }
+}
+
     body { margin: 0; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; }
     #header { padding: 10px; border-bottom: 1px solid #ccc; text-align: center; font-weight: bold; }
     .role-name-inputs { display: flex; justify-content: space-between; padding: 5px 10px; }
