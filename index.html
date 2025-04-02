@@ -88,12 +88,34 @@
   }
 }
 
-/* 獨立寫在外面，不可嵌套 */
 @media (max-width: 480px) {
-  button {
+  html {
     font-size: 18px;
-    padding: 14px 20px;
-    min-height: 48px;
+  }
+
+  button {
+    font-size: 1rem;
+    padding: 14px 22px;
+    min-height: 52px;
+    border-radius: 8px;
+    flex: 1 1 30%;
+    max-width: 32%;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+
+  #controls {
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .dialogue-content {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .sender-name {
+    font-size: 0.9rem;
   }
 }
 
@@ -604,7 +626,7 @@ function loadState() {
 
   const data = JSON.parse(localStorage.getItem("dialogue-editor-save") || "{}");
   if (!data.dialogues) {
-    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br><br>v5.7優化：現在可以吃文本的*斜體和**粗體設定了（但是生成後要吃語法自行修改喔！）<br><br>v5.6優化：手機可以用並讓手機好用的相關功能。※自動生成泡泡請在文本以空一行隔開段落！<br><br>v5.5優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br>3. 調正樣式設定內的錯字。<br>4. 修BUG：修正原先修改模式無法任意ENTER的問題。";
+    source.innerHTML = "請於此處貼上文本，選取文字後拖曳至右方工作區左側或右側生成對話框<br><br>v5.7優化：現在可以吃文本的*斜體和**粗體設定了（但是生成後要吃語法自行修改喔！）<br><br>v5.6優化：手機可以用並讓手機好用的相關功能。※自動生成泡泡請在文本以空一行隔開段落！<br><br>v5.5優化：<br>1. 工作區對話框完全地所見即所得，可修改對話框間距等，且輸出套用。<br>2. 重整後仍記憶修改後的樣式設定。<br>3. 調正樣式設定內的錯字。<br>4. 修BUG：修正原先修改模式無法任意ENTER的問題。";
     return;
   }
   leftInput.value = data.left || "";
