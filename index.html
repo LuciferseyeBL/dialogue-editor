@@ -366,54 +366,20 @@ function applyStyle() {
 
 function syncPreviewStyle() {
   const styleText = document.getElementById("output-style").textContent;
-  const temp = document.createElement("style");
-  temp.textContent = styleText;
-  document.head.appendChild(temp);
+  const tempStyle = document.createElement("style");
+  tempStyle.textContent = styleText;
+  document.head.appendChild(tempStyle);
 
-  // 新增一個測試容器來讀取 .chat-container 的 gap
+  // 抓 chat-container 的 gap 並套用
   const testContainer = document.createElement("div");
   testContainer.className = "chat-container";
   document.body.appendChild(testContainer);
-  const computedContainer = getComputedStyle(testContainer);
-  preview.style.gap = computedContainer.gap;
-  document.body.removeChild(testContainer); // 清除測試容器
+  const computed = getComputedStyle(testContainer);
+  preview.style.gap = computed.gap;
 
-  const test = document.createElement("div");
-  test.className = "chat-left";
-  document.body.appendChild(test);
-  const computed = getComputedStyle(test);
-
-  const leftPreviewBoxes = document.querySelectorAll(".dialogue.chat-left");
-  const rightPreviewBoxes = document.querySelectorAll(".dialogue.chat-right");
-
-leftPreviewBoxes.forEach(el => {
-  el.style.backgroundColor = computed.backgroundColor;
-  el.style.color = computed.color;
-  el.style.padding = computed.padding;
-  el.style.borderRadius = computed.borderRadius;
-  el.style.maxWidth = computed.maxWidth;
-  el.style.alignSelf = computed.alignSelf;
-  el.style.marginTop = computed.marginTop;
-  el.style.marginBottom = computed.marginBottom;
-  el.style.whiteSpace = computed.whiteSpace;
-});
-
-  test.className = "chat-right";
-  const computedR = getComputedStyle(test);
-  rightPreviewBoxes.forEach(el => {
-    el.style.backgroundColor = computedR.backgroundColor;
-    el.style.color = computedR.color;
-    el.style.padding = computedR.padding;
-    el.style.borderRadius = computedR.borderRadius;
-    el.style.maxWidth = computedR.maxWidth;
-    el.style.alignSelf = computedR.alignSelf;
-    el.style.marginTop = computedR.marginTop;
-    el.style.marginBottom = computedR.marginBottom;
-    el.style.whiteSpace = computedR.whiteSpace;
-  });
-
-  test.remove();
-  temp.remove();
+  // 清除
+  testContainer.remove();
+  tempStyle.remove();
 }
 
 function processText(text) {
@@ -438,7 +404,9 @@ function isMobile() {
 
 function createDialogue(html, order, side) {
   const div = document.createElement("div");
-  const className = side === "left" ? "dialogue chat-left left" : "dialogue chat-right right";
+  const className = side === "left"
+   ? "dialogue chat-message chat-left left"
+   : "dialogue chat-message chat-right right";
   div.className = className;
   div.dataset.order = order;
   div.dataset.side = side;
