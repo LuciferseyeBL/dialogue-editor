@@ -266,7 +266,7 @@ button {
   margin-bottom: 0;
 }
 
-/* 手機限定大泡泡字體 */
+/* 手機限定泡泡字體大小 */
 @media screen and (max-width: 600px) {
   .chat-left, .chat-right {
     font-size: 1rem;
@@ -396,12 +396,6 @@ leftPreviewBoxes.forEach(el => {
   el.style.marginTop = computed.marginTop;
   el.style.marginBottom = computed.marginBottom;
   el.style.whiteSpace = computed.whiteSpace;
-
-  // ✅ 加這段讓手機字體正確套用
-  if (isMobile()) {
-    el.style.fontSize = computed.fontSize;
-    el.style.lineHeight = computed.lineHeight;
-  }
 });
 
   test.className = "chat-right";
@@ -416,11 +410,6 @@ leftPreviewBoxes.forEach(el => {
     el.style.marginTop = computedR.marginTop;
     el.style.marginBottom = computedR.marginBottom;
     el.style.whiteSpace = computedR.whiteSpace;
-  // ✅ 加這段讓手機字體正確套用
-  if (isMobile()) {
-    el.style.fontSize = computed.fontSize;
-    el.style.lineHeight = computed.lineHeight;
-  }
   });
 
   test.remove();
