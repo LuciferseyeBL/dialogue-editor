@@ -9,7 +9,10 @@
 **合併下方同側**：選定一對話泡泡，可與下方對話泡泡合併<br>
 **匯出TXT**：可匯出MD格式的TXT檔，貼在HackMD編輯器則形成對話泡泡式文本<br>
 **模式切換**：原始為拖曳模式，點選對話框可拖曳修改順序；切換為修改模式，點選對話框可修改框內文字<br>
-**全部清除**<br><br>
+**全部清除**<br>
+🔄 **自動轉換對話泡泡**：文本以空一行(< b r >< b r >)隔開作為一個泡泡，可自動生成<br>
+↔ **一次性對調左右泡泡**：一次性調換所有對話泡泡左右
+<br><br>
 其他功能：<br>
 1. 顯示角色名可以自定義（如聊天訊息中對話泡泡左上會出現發話者名稱。若不想要名稱則留空）
 2. 對話泡泡右上雙箭頭，可以左右對調對話框的位置
@@ -42,6 +45,10 @@ Default is Drag Mode: click and drag dialogue bubbles to reorder them.
 Switch to Edit Mode to modify the text inside each dialogue bubble directly.
 
 全部清除: Clear All
+
+🔄 自動轉換對話泡泡（🔄 Auto-convert Dialogue Bubbles）: Text separated by a blank line (<b r><b r>) will be automatically generated as individual dialogue bubbles.
+
+↔ 一次性對調左右泡泡（↔ One-click Flip Bubble Sides）: Instantly swap all dialogue bubbles from left to right and vice versa.
 
 Other Features:
 Speaker names can be customized (e.g., the speaker's name appears above the dialogue bubble. Leave blank if you don’t want a name to show).
@@ -78,6 +85,10 @@ Progress is automatically saved (refreshing with F5 won’t reset your work).
 編集モードに切り替えると、吹き出しの中のテキストを直接編集できます。
 
 全部清除（全クリア）
+
+🔄 自動轉換對話泡泡（🔄 自動で吹き出しに変換）：テキストが空行（<b r><b r>）で区切られている場合、自動的に個別の吹き出しとして生成されます。
+
+↔ 一次性對調左右泡泡 （↔ 吹き出しの左右を一括入れ替え）：すべての吹き出しの左右位置を一度に入れ替えます。
 
 その他の機能：
 吹き出しの上に表示される発言者名は自由に設定可能（空欄にすれば表示されません）。
