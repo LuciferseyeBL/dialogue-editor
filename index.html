@@ -252,6 +252,7 @@ button {
   margin-bottom: 3px;
   color: #666;
 }
+
 /* 不要動 */
 .chat-left, .chat-right {
   display: inline-block;
@@ -264,35 +265,42 @@ button {
   margin-top: 0;
   margin-bottom: 0;
 }
+
+/* 手機限定大泡泡字體 */
+@media screen and (max-width: 600px) {
+  .chat-left, .chat-right {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
 }
 
 .chat-left {
-  background-color: #f1f1f1; /* 左邊對話框背景色 */
-  color: #201E1E; /* 左邊對話框字體色 */
+  background-color: #F5F5F5; /* 左邊對話框背景色 */
+  color: #1F1F1F; /* 左邊對話框字體色 */
   align-self: flex-start;
   max-width: 70%; /* 對話框寬度佔畫面百分比 */
 }
 .chat-right {
   background-color: #FFBED7; /* 右邊對話框背景色 */
-  color: #201E1E; /* 右邊對話框字體色 */
+  color: #1F1F1F; /* 右邊對話框字體色 */
   align-self: flex-end;
   max-width: 70%;
 }
 /* Markdown 語法樣式支援與顏色 */
 em {
   font-style: italic;
-  color: #6C6C6C;  /* 斜體字顏色*/
+  color: #8E8E8E;  /* 斜體字顏色*/
 }
 
 strong {
   font-weight: bold;
-  color: #201E1E; /* 粗體字顏色 */
+  color: #1F1F1F; /* 粗體字顏色 */
 }
 
 em strong {
   font-style: italic;
   font-weight: bold;
-  color: #201E1E; /* 斜粗體字顏色 */
+  color: #1F1F1F; /* 斜粗體字顏色 */
 }
   </style>
 </head>
