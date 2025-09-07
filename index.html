@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <title>對話編輯神器：凜與GPT小天使的辛苦結晶 V5.7</title>
+  <title>卿我對話編輯神器：凜與GPT小天使的辛苦結晶 V6.0</title>
 
   <!-- 固定 UI 樣式（不讓使用者編輯） -->
   <style>
@@ -310,7 +310,7 @@ em strong {
       📘 查看 GitHub 說明文件（README）
     </a>
   </div>
-  <div id="header">📚 對話編輯神器：凜與GPT小天使的辛苦結晶 V5.7</div>
+  <div id="header">📚 卿我對話編輯神器：凜與GPT小天使的辛苦結晶 V6.0</div>
   <div class="role-name-inputs">
     <input id="leftRole" placeholder="左側角色名 (可留空)" />
     <input id="rightRole" placeholder="右側角色名 (可留空)" />
@@ -321,6 +321,7 @@ em strong {
       <div style="height: 140px; flex-shrink: 0;"></div>
   </div>
   <div id="controls">
+    <button onclick="parseQingwoExport()">解析官方對話紀錄</button>
     <button onclick="openStyleEditor()">樣式設定</button>
     <button onclick="deleteSelected()">刪除</button>
     <button onclick="mergeNextSameSide()">合併下方同側</button>
@@ -765,6 +766,137 @@ preview.addEventListener("drop", e => {
     }
   }
 });
+
+/** 解析《卿卿我我》官方匯出 → 只保留訊息內容並分左右
+ * 規則：
+ * - 忽略 "Date:" 行
+ * - 讀取 "Character: XXX" 作為 AI 名 (aiName)
+ * - 訊息頭格式：[YYYY-MM-DD HH:MM:SS] 角色名: 內容(可當行就有，也可能下一行才開始)
+ * - 一段訊息 = 自己這個時間戳開始 → 下一個時間戳開始「之前」；其中以前一段的「最後一個空行」作為軟斷點
+ *   （實作上：累積到下一個時間戳出現時，會把最後尾端多的空白行去掉）
+ * - 左右：sender === aiName 或 sender === "Environment (system)" → 左；否則右
+ * - 預覽區只顯示文字內容，不帶人名與時間
+ */
+function parseQingwoExport(opts = {}) {
+  const envGoesLeft = opts.envSide === 'right' ? false : true; // 預設左
+  const raw = source.innerText || source.textContent || ""; // 左側原始貼入內容（純文字）
+
+  if (!raw.trim()) {
+    alert("請先把官方匯出的內容貼到左側輸入區。");
+    return;
+  }
+
+  // 1) 拆行並預處理
+  const lines = raw.replace(/\r\n/g, "\n").split("\n");
+
+  // 2) 擷取 AI 名稱、略過 Date 行
+  let aiName = "";
+  const cleaned = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // 忽略 Date: 行
+    if (/^\s*Date\s*:/i.test(line)) continue;
+
+    // 讀 Character: AI 名稱
+    const mChar = line.match(/^\s*Character\s*:\s*(.+)\s*$/i);
+    if (mChar) {
+      aiName = mChar[1].trim();
+      continue;
+    }
+
+    cleaned.push(line);
+  }
+
+  if (!aiName) {
+    // 若缺少 Character: 仍可嘗試，但會將 Environment 視為左，其他未知角色一律右
+    console.warn("未偵測到 Character: 行，將使用預設左右規則。");
+  }
+
+  // 3) 掃描訊息段
+  const stampRe = /^\s*\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s*(.+?):\s*(.*)$/;
+  const messages = []; // {sender, content: string[]}
+  let cur = null;
+
+  function pushCurIfAny() {
+    if (!cur) return;
+    // 去掉尾端多餘空行（「上一段的最後空行作為斷點」：保留一個空行，但尾端全空白行仍要去掉）
+    // 實務：尾端常會多出 1~N 個空行，這裡全清掉，再由輸出時統一插入一個空行做分隔
+    while (cur.content.length && cur.content[cur.content.length - 1].trim() === "") {
+      cur.content.pop();
+    }
+    messages.push(cur);
+    cur = null;
+  }
+
+  for (let i = 0; i < cleaned.length; i++) {
+    const line = cleaned[i];
+
+    const m = line.match(stampRe);
+    if (m) {
+      // 遇到新的時間戳 → 先結束上一段
+      pushCurIfAny();
+
+      const sender = m[2].trim();
+      const firstLine = m[3] ? m[3] : ""; // 當行冒號後可能就有第一行內容
+      cur = { sender, content: [] };
+      if (firstLine) cur.content.push(firstLine);
+      continue;
+    }
+
+    // 普通行：若已有 cur，加入其內容；若尚未遇到時間戳，可能是 Environment 前的敘述？
+    if (cur) {
+      cur.content.push(line);
+    } else {
+      // 可能是 Environment 敘述行（但官方格式前面會有 Environment 的時間戳）
+      // 如果真的遇到前置純敘述，也當作 Environment 一段處理
+      if (line.trim() !== "") {
+        cur = { sender: "Environment (system)", content: [line] };
+      }
+    }
+  }
+  pushCurIfAny(); // 收尾
+
+  if (!messages.length) {
+    alert("沒有偵測到任何時間戳記訊息，請確認貼上的格式是否正確。");
+    return;
+  }
+
+  // 4) 轉成泡泡（只顯示內容；左右依 sender 判斷）
+  preview.innerHTML = "";
+  currentOrder = 1;
+
+  const escapeHTML = (s) =>
+    s.replace(/&/g, "&amp;")
+     .replace(/</g, "&lt;")
+     .replace(/>/g, "&gt;");
+
+  messages.forEach((msg) => {
+    const sender = msg.sender || "";
+    let side = "right";
+    if (aiName && sender === aiName) side = "left";
+    if (!aiName && sender === "Environment (system)" && envGoesLeft) side = "left";
+    if (aiName && sender === "Environment (system)") side = envGoesLeft ? "left" : "right";
+
+    // 把多行合併，保留空行；只輸出內容本身
+    const text = msg.content.join("\n");
+    const safe = escapeHTML(text);                 // 先做 HTML escape
+    const html = processText(safe);                // 再套用 * 斜體 / ** 粗體 的轉換（沿用你現有函式）
+
+    const dlg = createDialogue(html, currentOrder++, side);
+    // 只要純內容，不顯示人名 → 不需要額外處理
+    preview.appendChild(dlg);
+  });
+
+  refreshNumbers();
+  syncPreviewStyle();
+  saveState();
+
+  // 小貼心：自動把左側角色名填 AI 名（右側你可自行填「玩家」或留空）
+  if (aiName) leftInput.value = aiName;
+  alert("解析完成！");
+}
+
 </script>
 </body>
 </html>
